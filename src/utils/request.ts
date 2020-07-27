@@ -48,10 +48,19 @@ const errorHandler = (error: { response: Response }): Response => {
 /**
  * 配置request请求时的默认参数
  */
+
+const token = () => {
+  let accountInfo = JSON.parse(localStorage.getItem('accountInfo'));
+  console.log(accountInfo.accountInfo.token);
+  return accountInfo.accountInfo.token;
+};
 const request = extend({
   errorHandler, // 默认错误处理
   // credentials: 'include', // 默认请求是否带上cookie
-  Authorization: 'Bearer ${localStorage.getItem("token")}',
+  Authorization: 'Bearer ${localStorage.getItem("antd-pro-authority")}',
+  params: {
+    'token' : token(),
+  },
 });
 
 export default request;
