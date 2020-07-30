@@ -1,42 +1,40 @@
-import { getTreeList, getDeptInfo, getUsers,addDept,updateDept } from "@/services/organization";
 import { AnyAction, Reducer } from 'redux';
+import { getUserLists, addAccount, getUserInfo } from '@/services/users';
 
 import { EffectsCommandMap } from 'dva';
 import { TagType } from './data.d';
 
-// export interface OrganizationModel是自定义一个数据类型
+// export interface UsersModelState是自定义一个数据类型
 // 这里使用到的TagTyp是data.d.ts中定义好的数据
-export interface OrganizationModel {
-  tags: Partial<TagType>;
-  dept_info: Partial<TagType>;
-  users: Partial<TagType>;
+export interface UsersModelState {
+  lists: Partial<TagType>;
 }
 // 这里是定义函数类型
 export type Effect = (
   action: AnyAction,
-  effects: EffectsCommandMap & { select: <T>(func: (state: OrganizationModel) => T) => T },
+  effects: EffectsCommandMap & { select: <T>(func: (state: UsersModelState) => T) => T },
 ) => void;
 
-export interface TreeType {
-  namespace: "getDept";
-  state: OrganizationModel;
+export interface Users {
+  namespace: "users";
+  state: UsersModelState;
   effects: {
-    treeList: Effect;
+    getLists: Effect;
     deptInfo: Effect;
     userInfo: Effect;
-    deptAdd: Effect;
+    accountAdd: Effect;
     deptEdit: Effect;
   };
   reducers: {
-    save: Reducer<OrganizationModel>;
-    get: Reducer<OrganizationModel>;
-    users_return: Reducer<OrganizationModel>;
+    returnLists: Reducer<UsersModelState>;
+    get: Reducer<UsersModelState>;
+    users_return: Reducer<UsersModelState>;
   };
 }
-const Tree: TreeType = {
-  namespace: "getDept",
+const User: Users = {
+  namespace: "users",
   state: {
-    tags: {},
+    lists: {},
     dept_info: {},
     users: {},
   },
@@ -48,11 +46,11 @@ const Tree: TreeType = {
      * @param put 发出一个 Action，类似于 dispatch 将服务端返回的数据传递给上面的state
      * @returns {IterableIterator<*>}
      */
-    *treeList({ payload }, { call, put }) {
-      const response = yield call(getTreeList, payload);
+    *getLists({ payload }, { call, put }) {
+      const response = yield call(getUserLists, payload);
       yield put({
         // 这行对应下面的reducers处理函数名字
-        type: "save",
+        type: "returnLists",
         payload: response
       });
     },
@@ -67,15 +65,15 @@ const Tree: TreeType = {
       callback(response); // 返回结果
     },
     *userInfo({ payload }, { call, put }) {
-      const response = yield call(getUsers, payload);
+      const response = yield call(getUserInfo, payload);
       yield put({
         // 这行对应下面的reducers处理函数名字
         type: "users_return",
         payload: response
       });
     },
-    *deptAdd({ payload, callback }, { call, put }) {
-      const response = yield call(addDept, payload);
+    *accountAdd({ payload, callback }, { call, put }) {
+      const response = yield call(addAccount, payload);
       callback(response);
     },
     *deptEdit({ payload, callback }, { call, put }) {
@@ -91,10 +89,10 @@ const Tree: TreeType = {
      * @param action
      * @returns {{[p: string]: *}}
      */
-    save(state, action) {
+    returnLists(state, action) {
       return {
         ...state,
-        tags: action.payload
+        lists: action.payload
       };
     },
     get(state, action) {
@@ -113,4 +111,4 @@ const Tree: TreeType = {
 
 }
 
-export default Tree;
+export default User;

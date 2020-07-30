@@ -4,13 +4,13 @@ import { Form, Input, Select, Button, Table, Pagination, Row, Card, Col, message
 import FormCustomizedFormControls from './FormCustomizedFormControls';
 import FormSearch from './FormSearch';
 import CollectionCreateForm from './modal';
+import { history } from 'umi';
 
 import { RouteChildrenProps } from 'react-router';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
 import { TagType } from './data';
-import { AccountType } from '@/models/account'
-import { FormInstance } from 'antd/lib/form';
+import { UsersModelState } from '@/models/users'
 
 const columns = [
 	{
@@ -23,19 +23,61 @@ const columns = [
 		dataIndex: 'email',
 		// render: text => <a>{text}</a>,
 		align: 'center',
-
-	},
-	{
-		title: '已关联用户',
-		dataIndex: 'account_users',
+    },
+    {
+		title: '姓名',
+		dataIndex: 'name',
+		// render: text => <a>{text}</a>,
 		align: 'center',
 	},
 	{
-		title: '账户状态',
+		title: '用户状态',
 		dataIndex: 'status',
-		render: text => {
-			return text == 1 ? '启用' : '停用';
-		},
+		// render: text => {
+		// 	return text == 1 ? '启用' : '停用';
+		// },
+		align: 'center',
+    },
+    {
+		title: '用户编号',
+		dataIndex: 'number',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '性别',
+		dataIndex: 'sex',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '身份证号码',
+		dataIndex: 'id_card',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '手机号码',
+		dataIndex: 'phone',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '公司号码',
+		dataIndex: 'company_num',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '部门/其他部门',
+		dataIndex: 'dept_id_name',
+		// render: text => <a>{text}</a>,
+		align: 'center',
+    },
+    {
+		title: '角色/辅助',
+		dataIndex: 'role_id_name',
+		// render: text => <a>{text}</a>,
 		align: 'center',
 	},
 	{
@@ -112,10 +154,10 @@ class Index extends Component<MonitorProps> {
 	componentDidMount() {
 		const { dispatch } = this.props;
 		dispatch({
-			type: 'accounts/getLists',
+			type: 'users/getLists',
 		});
 		dispatch({
-			type: 'accounts/userInfo',
+			type: 'account/userInfo',
 		});
 	}
 	// 弹框显示状态、及当前需要展示的数据赋值
@@ -141,17 +183,9 @@ class Index extends Component<MonitorProps> {
 	// 数据新建
 	onCreate = values => {
 		const { dispatch } = this.props;
-		console.log(this.state,values);
-		var type = '';
-		if(this.state.selectedRowKey == ''){
-			type = 'accounts/accountAdd';
-		} else {
-			type = 'accounts/accountEdit'
-			values.account_id = this.state.selectedRowKey
-		}
-		// console.log(values);return false;
+		console.log(this.state,values);return false;
 		dispatch({
-			type: type,
+			type: 'account/accountAdd',
 			payload:values,
 			callback: (res) => {
 				if(res.status != undefined && res.status != 500){
@@ -164,11 +198,6 @@ class Index extends Component<MonitorProps> {
 							},
 						});
 						this.changeVisible(false);
-						this.setState({
-							selectedRowKey: '',
-							selectedRows: [],
-							editId: '',
-						});
 						this.componentDidMount();
 					} else {
 						message.error({content:res.msg,
@@ -196,7 +225,7 @@ class Index extends Component<MonitorProps> {
 		const { dispatch } = this.props;
 		// console.log(current,pagesize);
 		dispatch({
-			type: 'accounts/getLists',
+			type: 'account/getLists',
 			params:{
 				'offset' : current,
 				'limit' : pagesize,
@@ -207,7 +236,7 @@ class Index extends Component<MonitorProps> {
 
 	render() {
 		const { lists,users } = this.props;
-		// console.log(users);
+		console.log(lists,users);
 		const rowSelection = {
 			onChange: (selectedRowKeys, selectedRows) => {
 				this.setState({
@@ -227,7 +256,7 @@ class Index extends Component<MonitorProps> {
 						<Col span={24} style={{ textAlign: 'right' }}>
 							<Button type="primary"
 								onClick={() => {
-									this.changeVisible(true, 0);
+									history.push('/admin/userAdd');
 								}}
 									>
 										新建
@@ -305,19 +334,19 @@ class Index extends Component<MonitorProps> {
 
 export default connect(
 	({
-	  accounts,
+	  users,
 	  loading,
 	}: {
-	  // 注意这里是model.ts里面定义好的AccountType
-	  accounts: AccountType;
+	  // 注意这里是model.ts里面定义好的UsersModelState
+	  users: UsersModelState;
 	  loading: {
 		models: { [key: string]: boolean };
 	  };
 	}) => ({
-	  // 这里解读： lists: 命名空间.AccountType里面的lists
-	  lists: accounts.lists,
+	  // 这里解读： lists: 命名空间.UsersModelState里面的lists
+	  lists: users.lists,
 	  // dept_info: getDept.dept_info,
-	  users: accounts.users,
+	//   users: users.users,
 	  loading: loading.models.getDept,
 	}),
 	// 最后这里要带上面的class

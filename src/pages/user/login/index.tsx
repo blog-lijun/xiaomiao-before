@@ -35,6 +35,8 @@ const Login: React.FC<LoginProps> = (props) => {
   const [autoLogin, setAutoLogin] = useState(true);
   const [type, setType] = useState<string>('account');
 
+  console.log(props);
+
   const handleSubmit = (values: LoginParamsType) => {
     const { dispatch } = props;
     dispatch({
