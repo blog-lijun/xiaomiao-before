@@ -88,7 +88,7 @@ export default defineConfig({
                   path: '/admin/roles',
                   name: '角色管理',
                   icon: 'smile',
-                  component: './user/users',
+                  component: './Organization/users',
                   authority: ['admin'],
                 },
                 {
