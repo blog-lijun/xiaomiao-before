@@ -3,7 +3,7 @@ import { GlobalModelState } from './global';
 import { UserModelState } from './user';
 import { StateType } from './login';
 
-export { GlobalModelState, UserModelState, AccountType, OrganizationModel };
+export { GlobalModelState, UserModelState, AccountType, OrganizationModel,RolesState };
 
 export interface Loading {
   global: boolean;
@@ -17,6 +17,7 @@ export interface Loading {
     users?: boolean;
     accounts?: boolean;
     getDept?: boolean;
+    roles?: boolean;
   };
 }
 
@@ -29,6 +30,7 @@ export interface ConnectState {
   users: UsersModelState;
   accounts: AccountType;
   getDept: OrganizationModel;
+  roles: RolesState;
 }
 
 export interface Route extends MenuDataItem {

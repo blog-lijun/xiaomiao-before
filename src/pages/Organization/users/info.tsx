@@ -48,6 +48,9 @@ class Index extends Component<MonitorProps> {
 		});
 		dispatch({
 			type: 'getDept/deptInfo',
+        });
+		dispatch({
+			type: 'roles/getLists',
 		});
 	}
 
@@ -209,7 +212,9 @@ class Index extends Component<MonitorProps> {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Form.Item style={{ width:'100%',textAlign:'center',maxWidth:'100%' }} >
+                    <Form.Item style={{ width:'100%',textAlign:'center',maxWidth:'100%' }} 
+                    wrapperCol={{span:25}}
+                    >
                         <Space>
                             <Button type="primary" htmlType="submit">
                             保存
@@ -228,9 +233,10 @@ class Index extends Component<MonitorProps> {
 	}
 }
 
-export default connect(({ accounts,users, loading, getDept }: ConnectState) => ({
+export default connect(({ accounts,users, loading, getDept,roles }: ConnectState) => ({
     lists: users.lists,
     accountInfo: accounts.allAccounts,
-    deptInfo: getDept.dept_info
+    deptInfo: getDept.dept_info,
+    rolesInfo: roles.lists,
     // submitting: loading.effects['login/login'],
 }))(Index);
