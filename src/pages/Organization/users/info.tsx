@@ -109,7 +109,7 @@ class Index extends Component<MonitorProps> {
 
 
 	render() {
-		const { lists,accountInfo,deptInfo } = this.props;
+		const { lists,accountInfo,deptInfo,rolesInfo } = this.props;
         console.log(this.props);
 		return (
 			<PageContainer>
@@ -201,14 +201,21 @@ class Index extends Component<MonitorProps> {
                         <Col span={12}>
                             <Form.Item  name='role_id' style={{}} label="角色" rules={[{ required: true }]}>
                             <Select>
-                                <Option value="1">部门</Option>
-                                <Option value="2">分公司</Option>
+                                {Object.keys(rolesInfo).map(v => (
+                                    <Option key={v}>{rolesInfo[v]}</Option>
+                                ))}
                             </Select>
                             </Form.Item>
                         </Col>
                         <Col span={12}>
                             <Form.Item name='other_role_id' label="辅助角色" >
-                                <Input/>
+                            <Select
+                                mode="multiple"
+                            >
+                                {Object.keys(rolesInfo).map(v => (
+                                    <Option key={v}>{rolesInfo[v]}</Option>
+                                ))}
+                            </Select>
                             </Form.Item>
                         </Col>
                     </Row>
