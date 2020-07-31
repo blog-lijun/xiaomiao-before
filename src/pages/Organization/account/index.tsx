@@ -71,7 +71,7 @@ class Index extends Component<MonitorProps> {
 	// 	this.state = {
 	// 		visible: false,
 	// 		currentDetailData: [], // 当前需要传递给子组件的数据，用于显示form表单初始值
-	// 		selectedRowKey: '',
+	// 		selectedRowKeys: '',
 	// 	}
 	// }
 
@@ -80,7 +80,7 @@ class Index extends Component<MonitorProps> {
 	state = {
 		visible: false,
 		currentDetailData: [], // 当前需要传递给子组件的数据，用于显示form表单初始值
-		selectedRowKey: '',
+		selectedRowKeys: '',
 		selectedRows: [],
 		pagination: { pageSize:10 },
 		editId: '',
@@ -110,7 +110,7 @@ class Index extends Component<MonitorProps> {
 			this.setState({
 				currentDetailData: [],
 				editId: '',
-				selectedRowKey: '',
+				selectedRowKeys: [],
 				selectedRows: [],
 			})
 		}
@@ -121,11 +121,11 @@ class Index extends Component<MonitorProps> {
 		const { dispatch } = this.props;
 		// console.log(this.state,values);return false;
 		var type = '';
-		if(this.state.selectedRowKey == ''){
+		if(`${this.state.selectedRowKeys}` == ''){
 			type = 'accounts/accountAdd';
 		} else {
 			type = 'accounts/accountEdit'
-			values.account_id = this.state.selectedRowKey
+			values.account_id = `${this.state.selectedRowKeys}`
 		}
 		// console.log(values);return false;
 		dispatch({
@@ -143,7 +143,7 @@ class Index extends Component<MonitorProps> {
 						});
 						this.changeVisible(false);
 						this.setState({
-							selectedRowKey: '',
+							selectedRowKeys: [],
 							selectedRows: [],
 							editId: '',
 						});
@@ -163,11 +163,11 @@ class Index extends Component<MonitorProps> {
 	//数据编辑
 	editData = values => {
 		// console.log(values);
-		if (values.selectedRowKey == '') {
+		if (`${values.selectedRowKeys}` == '') {
 			message.error('请选择一个账户');
 			return false;
 		} else {
-			this.changeVisible(true, values.selectedRowKey);
+			this.changeVisible(true, `${values.selectedRowKeys}`);
 		}
 	};
 	resetSearch = () => {
@@ -199,12 +199,12 @@ class Index extends Component<MonitorProps> {
 	}
 
 	upStatus = (values, type) => {
-		if (values.selectedRowKey == '') {
+		if (`${values.selectedRowKeys}` == '') {
 			message.error('请选择一个账户');
 			return false;
 		}
 		var params = {
-			account_id:values.selectedRowKey
+			account_id:`${values.selectedRowKeys}`
 		};
 		var url = 'accounts/accountEdit';
 		if(type == 'status'){//修改状态
@@ -229,13 +229,16 @@ class Index extends Component<MonitorProps> {
 								marginTop: '20vh',
 							},
 						});
+						//这里是改完以后把选中的值设置为空
 						this.setState({
-							selectedRowKey: [],
+							selectedRowKeys: [],
 							selectedRows: {},
 						})
+
 						dispatch({
 							type: 'accounts/getLists',
 						});
+						
 						
 					} else {
 						message.error({content:res.msg,
@@ -251,7 +254,8 @@ class Index extends Component<MonitorProps> {
 	};
 	onSelectChange = (selectedRowKeys, selectedRows) => {
 			this.setState({
-				selectedRowKey: `${selectedRowKeys}`,
+				// selectedRowKeys: `${selectedRowKeys}`,
+				selectedRowKeys: selectedRowKeys,
 				selectedRows: selectedRows,
 			})
 			// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);
@@ -260,13 +264,13 @@ class Index extends Component<MonitorProps> {
 	render() {
 		const { lists,users } = this.props;
 		// console.log(users);
-		const { selectedRowKey } = this.state;
+		const { selectedRowKeys } = this.state;
 		const rowSelection = {
-			selectedRowKey,
+			selectedRowKeys,
 			onChange: this.onSelectChange,
 			// onChange: (selectedRowKeys, selectedRows) => {
 			// 	this.setState({
-			// 		selectedRowKey: `${selectedRowKeys}`,
+			// 		selectedRowKeys: `${selectedRowKeys}`,
 			// 		selectedRows: selectedRows,
 			// 	})
 			// 	// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);

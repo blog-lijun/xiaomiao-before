@@ -146,7 +146,7 @@ class Index extends Component<MonitorProps> {
 	state = {
 		visible: false,
 		currentDetailData: [], // 当前需要传递给子组件的数据，用于显示form表单初始值
-		selectedRowKey: '',
+		selectedRowKeys: [],
 		selectedRows: [],
 		pagination: { pageSize:10 },
 		editId: '',
@@ -183,15 +183,15 @@ class Index extends Component<MonitorProps> {
 
 	//数据编辑
 	editData = (values,is_look) => {
-		if (values.selectedRowKey == '') {
+		if (`${values.selectedRowKeys}` == '') {
 			message.error('请选择一个账户');
 			return false;
 		} else {
 			var url = '';
 			if(is_look){
-				url = '/admin/userAdd?editId='+`${values.selectedRowKey}`+'&is_look='+is_look;
+				url = '/admin/userAdd?editId='+`${values.selectedRowKeys}`+'&is_look='+is_look;
 			} else {
-				url = '/admin/userAdd?editId='+`${values.selectedRowKey}`
+				url = '/admin/userAdd?editId='+`${values.selectedRowKeys}`
 			}
 			// this.changeVisible(true, values.selectedRowKey);
 			history.push(url);
@@ -209,7 +209,7 @@ class Index extends Component<MonitorProps> {
 		});
 	};
 	upStatus = (values, type) => {
-		if (values.selectedRowKey == '') {
+		if (`${values.s}` == '') {
 			message.error('请选择一个账户');
 			return false;
 		}
@@ -217,7 +217,7 @@ class Index extends Component<MonitorProps> {
 		// 	user_id:values.selectedRowKey
 		// };
 		var params = values.selectedRows[0];
-		params['user_id'] = values.selectedRowKey;
+		params['user_id'] = `${values.selectedRowKeys}`;
 		var url = 'users/userEdit';
 		if(type == 'status'){//修改状态
 			let statusReturn;
@@ -239,11 +239,13 @@ class Index extends Component<MonitorProps> {
 								marginTop: '20vh',
 							},
 						});
-						// this.setState({
-						// 	selectedRowKey: '',
-						// 	selectedRows: [],
-						// 	editId: '',
-						// });
+						if(type == 'status'){
+							this.setState({
+								selectedRowKeys: [],
+								selectedRows: [],
+							});
+						}
+						
 						dispatch({
 							type: 'users/getLists',
 						});
@@ -280,10 +282,12 @@ class Index extends Component<MonitorProps> {
 
 	render() {
 		const { lists,users } = this.props;
+		const { selectedRowKeys } = this.state;
 		const rowSelection = {
+			selectedRowKeys,
 			onChange: (selectedRowKeys, selectedRows) => {
 				this.setState({
-					selectedRowKey: `${selectedRowKeys}`,
+					selectedRowKeys: selectedRowKeys,
 					selectedRows: selectedRows,
 				})
 				// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);
