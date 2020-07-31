@@ -116,7 +116,7 @@ request.interceptors.response.use(async response => {
 
   const data = await response.clone().json();
 
-  console.log(data);
+  // console.log(data);
   // 详情返回的response处理
 
   if(data.code === '500') {

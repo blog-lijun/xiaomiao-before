@@ -58,6 +58,7 @@ class Index extends Component<MonitorProps> {
                     }
 
                     this.formRef.current?.setFieldsValue(res)
+                    console.log(res.other_role_id,res.other_dept_id);
                     this.formRef.current?.setFieldsValue({
                         'other_role_id[]':res.other_role_id
                     })
@@ -72,7 +73,10 @@ class Index extends Component<MonitorProps> {
 			type: 'accounts/allAccounts',
 		});
 		dispatch({
-			type: 'getDept/deptInfo',
+            type: 'getDept/deptInfo',
+            callback: (res) => {
+                console.log(res);
+            }
         });
 		dispatch({
 			type: 'roles/getLists',
@@ -89,10 +93,13 @@ class Index extends Component<MonitorProps> {
         } else {
             type = 'users/userAdd';
         }
+        console.log(type,values);
+
 		dispatch({
 			type: type,
 			payload:values,
 			callback: (res) => {
+                console.log(res);
 				if(res.status != undefined && res.status != 500){
 					if(res.code == 200){
 						this.setState({
@@ -120,7 +127,7 @@ class Index extends Component<MonitorProps> {
 						  });
 					}
 				  }
-			},
+			}
 		});
 	};
 

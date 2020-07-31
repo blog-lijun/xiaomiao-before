@@ -26,16 +26,12 @@ export interface Users {
   };
   reducers: {
     returnLists: Reducer<UsersModelState>;
-    get: Reducer<UsersModelState>;
-    users_return: Reducer<UsersModelState>;
   };
 }
 const User: Users = {
   namespace: "users",
   state: {
     lists: {},
-    dept_info: {},
-    usersInfo: {},
   },
 
   effects: {
@@ -53,7 +49,7 @@ const User: Users = {
         payload: response
       });
     },
-    *userInfo({ payload,callback }, { call, put }) {
+    *userInfo({ payload, callback }, { call, put }) {
       const response = yield call(getUserInfo, payload);
       // yield put({
       //   // 这行对应下面的reducers处理函数名字
@@ -63,12 +59,10 @@ const User: Users = {
       callback(response);
     },
     *userAdd({ payload, callback }, { call, put }) {
-      console.log(payload);
       const response = yield call(addUser, payload);
       callback(response);
     },
     *userEdit({ payload, callback }, { call, put }) {
-      console.log(payload);
       const response = yield call(editUser, payload);
       callback(response);
     },
@@ -87,18 +81,6 @@ const User: Users = {
         lists: action.payload
       };
     },
-    get(state, action) {
-      return {
-        ...state,
-        dept_info: action.payload
-      };
-    },
-    users_return(state, action) {
-      return {
-        ...state,
-        usersInfo: action.payload
-      };
-    }
   }
 
 }

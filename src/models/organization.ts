@@ -59,12 +59,13 @@ const Tree: TreeType = {
     *deptInfo({ payload, callback }, { call, put }) {
       // const { resolve } = payload;
       const response = yield call(getDeptInfo, payload);
+      callback(response); // 返回结果
+
       yield put({
         // 这行对应下面的reducers处理函数名字
         type: "get",
         payload: response
       });
-      callback(response); // 返回结果
     },
     *userInfo({ payload }, { call, put }) {
       const response = yield call(getUsers, payload);
