@@ -17,7 +17,7 @@ const FormSearch = (props) => {
 		}}
 		>
 			<Row gutter={24}>
-			<Form.Item
+			{/* <Form.Item
 				label="部门"
 				name="status"
 				>
@@ -36,7 +36,7 @@ const FormSearch = (props) => {
 					<Option value="1">在职</Option>
 					<Option value="2">离职</Option>
 				</Select>
-			</Form.Item>
+			</Form.Item> */}
 				<Form.Item
 				label="姓名"
 				name="name"

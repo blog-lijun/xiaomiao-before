@@ -3,6 +3,7 @@ import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import { Form, Input, Select, Button, Table, Pagination, Row, Card, Col, message } from 'antd';
 import FormCustomizedFormControls from './FormCustomizedFormControls';
 import FormSearch from './FormSearch';
+import UpdateLog from '../updateLog';
 import CollectionCreateForm from './modal';
 import { history } from 'umi';
 
@@ -145,6 +146,7 @@ class Index extends Component<MonitorProps> {
 
 	state = {
 		visible: false,
+		visibleLog: false,
 		currentDetailData: [], // 当前需要传递给子组件的数据，用于显示form表单初始值
 		selectedRowKeys: [],
 		selectedRows: [],
@@ -209,7 +211,7 @@ class Index extends Component<MonitorProps> {
 		});
 	};
 	upStatus = (values, type) => {
-		if (`${values.s}` == '') {
+		if (`${values.selectedRowKeys}` == '') {
 			message.error('请选择一个账户');
 			return false;
 		}
@@ -280,6 +282,41 @@ class Index extends Component<MonitorProps> {
 		});
 	}
 
+	modalCancel = (status) => {
+		this.setState({
+			visibleLog: status,
+		})
+	}
+
+  modalLog = () => {
+    var selectedKeys = this.state.selectedRowKeys;
+    if (JSON.stringify(selectedKeys) === "[]"){
+      message.error({
+        content: '请先选择一个用户！',
+        className: 'custom-class',
+        style: {
+          marginTop: '20vh',
+        },
+      });
+      return false;
+    } 
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'updateLog/getLists',
+      payload: {
+        type:3,
+        o_id: selectedKeys,
+      },
+      callback: (res) => {
+        // console.log(res);return false;
+        this.setState({ 
+		visibleLog: true,
+          modalLists: res,
+        });
+      }
+    });
+  } 
+
 	render() {
 		const { lists,users } = this.props;
 		const { selectedRowKeys } = this.state;
@@ -298,6 +335,15 @@ class Index extends Component<MonitorProps> {
 				<Card style={{ marginBottom: 10 }}>
 					<FormSearch searchLists={this.searchLists} resetSearch={this.resetSearch} />
 				</Card>
+				<UpdateLog visible={this.state.visibleLog} 
+				onCancel={() => {
+					this.setState({
+					visibleLog: status,
+					modalLists:{},
+					})
+				}} 
+				modalLists={this.state.modalLists}
+				/>
 				<Card>
 					<Row>
 						<Col span={24} style={{ textAlign: 'right' }}>
@@ -323,6 +369,14 @@ class Index extends Component<MonitorProps> {
 								}}
 							>
 								查看
+		          			</Button>
+							<Button
+								style={{ marginLeft: '8px' }}
+								onClick={() => {
+									this.modalLog();
+								}}
+							>
+								修改日志
 		          			</Button>
 
 							<Button

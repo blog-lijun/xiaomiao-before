@@ -9,6 +9,7 @@ import { connect } from 'dva';
 import { TagType } from './data';
 import { OrganizationModel } from '@/models/organization'
 import { FormInstance } from 'antd/lib/form';
+import UpdateLog from './updateLog';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -90,6 +91,8 @@ class SearchTree extends React.Component<MonitorProps> {
     remark: '',
     is_disabled: true,
     depts: {},
+    visible: false,
+    modalLists: false,
   };
 
   onExpand = expandedKeys => {
@@ -285,7 +288,40 @@ class SearchTree extends React.Component<MonitorProps> {
       },
     });
   };
+  modalCancel = (status) => {
+		this.setState({
+			visible: status,
+		})
+	}
 
+  modalLog = () => {
+    var selectedKeys = this.treeRef.current.state.selectedKeys;
+    if (JSON.stringify(selectedKeys) === "[]"){
+      message.error({
+        content: '请先选择一个部门！',
+        className: 'custom-class',
+        style: {
+          marginTop: '20vh',
+        },
+      });
+      return false;
+    } 
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'updateLog/getLists',
+      payload: {
+        type:1,
+        o_id: selectedKeys,
+      },
+      callback: (res) => {
+        // console.log(res);return false;
+        this.setState({ 
+          visible: true,
+          modalLists: res,
+        });
+      }
+    });
+  } 
 
   render() {
     const { tags, users } = this.props;
@@ -337,9 +373,19 @@ class SearchTree extends React.Component<MonitorProps> {
           <Button style={{ margin: '0 5px' }} onClick={this.addDept} type="primary">新建</Button>
           <Button style={{ margin: '0 5px' }} onClick={this.editDept} type="primary">修改</Button>
           <Button style={{ margin: '0 5px' }} onClick={this.deleteDept} type="primary">删除</Button>
-          {/* <Button style={{ margin: '0 5px' }} type="primary">修改日志</Button> */}
+          <Button style={{ margin: '0 5px' }} onClick={this.modalLog} type="primary">修改日志</Button>
           {/* <Button style={{ margin: '0 5px' }} type="primary">停用/启用</Button> */}
         </div>
+
+        <UpdateLog visible={this.state.visible} 
+          onCancel={() => {
+            this.setState({
+              visible: status,
+              modalLists:{},
+            })
+          }} 
+          modalLists={this.state.modalLists}
+        />
 
         <Card>
           <Row>
