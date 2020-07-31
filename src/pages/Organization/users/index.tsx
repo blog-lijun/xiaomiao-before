@@ -6,6 +6,7 @@ import FormSearch from './FormSearch';
 import UpdateLog from '../updateLog';
 import CollectionCreateForm from './modal';
 import { history } from 'umi';
+import Authorized from '@/utils/Authorized';
 
 import { RouteChildrenProps } from 'react-router';
 import { Dispatch } from 'redux';
@@ -347,6 +348,8 @@ class Index extends Component<MonitorProps> {
 				<Card>
 					<Row>
 						<Col span={24} style={{ textAlign: 'right' }}>
+						<Authorized authority="system_ctl_users_add" noMatch={null}>
+
 							<Button type="primary"
 								onClick={() => {
 									history.push('/admin/userAdd');
@@ -354,6 +357,9 @@ class Index extends Component<MonitorProps> {
 									>
 										新建
 							</Button>
+						</Authorized>
+						<Authorized authority="system_ctl_users_edit" noMatch={null}>
+
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
@@ -362,6 +368,10 @@ class Index extends Component<MonitorProps> {
 							>
 								修改
 		          			</Button>
+						</Authorized>
+						
+						<Authorized authority="system_ctl_users_look" noMatch={null}>
+
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
@@ -370,6 +380,7 @@ class Index extends Component<MonitorProps> {
 							>
 								查看
 		          			</Button>
+						</Authorized>
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {

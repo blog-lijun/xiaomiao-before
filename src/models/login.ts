@@ -33,8 +33,10 @@ const Model: LoginModelType = {
   effects: {
     *login({ payload }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
-      response.currentAuthority = 'admin';
-      console.log(response);
+      // response.currentAuthority = [
+      //   'organization/add',
+      //   'organization/edit'
+      // ];
       yield put({
         type: 'changeLoginStatus',
         payload: response,
@@ -44,19 +46,20 @@ const Model: LoginModelType = {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
-            }
-          } else {
-            window.location.href = '/';
-            return;
-          }
-        }
-        history.replace(redirect || '/');
+        window.location.href = redirect || window.routerBase;
+        // if (redirect) {
+        //   const redirectUrlParams = new URL(redirect);
+        //   if (redirectUrlParams.origin === urlParams.origin) {
+        //     redirect = redirect.substr(urlParams.origin.length);
+        //     if (redirect.match(/^\/.*#/)) {
+        //       redirect = redirect.substr(redirect.indexOf('#') + 1);
+        //     }
+        //   } else {
+        //     window.location.href = '/';
+        //     return;
+        //   }
+        // }
+        // history.replace(redirect || '/');
       }
     },
 
@@ -77,8 +80,7 @@ const Model: LoginModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log(payload);
-      setAuthority(payload.currentAuthority, payload.accounts);
+      setAuthority(payload.accounts.userInfo.permissions, payload.accounts);
       return {
         ...state,
         status: payload.status,

@@ -2,6 +2,8 @@ import React, { Component, useState } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import { Tree, Input, Card, Form, Button, Select, Row, Col, message } from 'antd';
 import request from '@/utils/request';
+import Authorized from '@/utils/Authorized';
+
 
 import { RouteChildrenProps } from 'react-router';
 import { Dispatch } from 'redux';
@@ -369,14 +371,21 @@ class SearchTree extends React.Component<MonitorProps> {
         }) : '';
     return (
       <>
-        <div style={{ textAlign: 'right', paddingBottom: '20px' }}>
+      <Card style={{ marginBottom: 10 }}>
+        <div style={{ textAlign: 'right' }}>
+        <Authorized authority="system_ctl_dept_add" noMatch={null}>
           <Button style={{ margin: '0 5px' }} onClick={this.addDept} type="primary">新建</Button>
+        </Authorized>
+        <Authorized authority="system_ctl_dept_edit" noMatch={null}>
           <Button style={{ margin: '0 5px' }} onClick={this.editDept} type="primary">修改</Button>
+        </Authorized>
+        <Authorized authority="system_ctl_dept_del" noMatch={null}>
           <Button style={{ margin: '0 5px' }} onClick={this.deleteDept} type="primary">删除</Button>
+        </Authorized>
           <Button style={{ margin: '0 5px' }} onClick={this.modalLog} type="primary">修改日志</Button>
           {/* <Button style={{ margin: '0 5px' }} type="primary">停用/启用</Button> */}
         </div>
-
+      </Card>
         <UpdateLog visible={this.state.visible} 
           onCancel={() => {
             this.setState({

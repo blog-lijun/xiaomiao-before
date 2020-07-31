@@ -44,7 +44,7 @@ export default defineConfig({
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
+          // authority: ['admin', 'user'],
           routes: [
             {
               path: '/',
@@ -61,42 +61,42 @@ export default defineConfig({
               name: '组织架构',
               icon: 'crown',
               // component: './Admin',
-              authority: ['admin'],
+              // authority: ['admin'],
               routes: [
                 {
                   path: '/admin/organization',
                   name: '组织架构',
                   icon: 'smile',
                   component: './Organization',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                 },
                 {
                   path: '/admin/sub-page',
                   name: '账户管理',
                   icon: 'smile',
                   component: './Organization/account',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                 },
                 {
                   path: '/admin/users',
                   name: '用户管理',
                   icon: 'smile',
                   component: './Organization/users',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                 },
                 {
                   path: '/admin/roles',
                   name: '角色管理',
                   icon: 'smile',
                   component: './Organization/users',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                 },
                 {
                   path: '/admin/userAdd',
                   name: '新增用户',
                   icon: 'smile',
                   component: './Organization/users/info',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                   hideInMenu: true,
                 },
               ],

@@ -35,7 +35,6 @@ const Login: React.FC<LoginProps> = (props) => {
   const [autoLogin, setAutoLogin] = useState(true);
   const [type, setType] = useState<string>('account');
 
-  console.log(props);
 
   const handleSubmit = (values: LoginParamsType) => {
     const { dispatch } = props;
@@ -43,6 +42,8 @@ const Login: React.FC<LoginProps> = (props) => {
       type: 'login/login',
       payload: { ...values, type },
     });
+  console.log(props);
+
   };
   return (
     <div className={styles.main}>

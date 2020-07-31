@@ -3,12 +3,14 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Table,  Row, Card, Col, message } from 'antd';
 import FormSearch from './FormSearch';
 import CollectionCreateForm from './modal';
+import Authorized from '@/utils/Authorized';
 
 import { RouteChildrenProps } from 'react-router';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
 import { TagType } from './data';
 import { AccountType } from '@/models/account'
+import { utils } from 'umi';
 
 const columns = [
 	{
@@ -284,6 +286,7 @@ class Index extends Component<MonitorProps> {
 				<Card>
 					<Row>
 						<Col span={24} style={{ textAlign: 'right' }}>
+						<Authorized authority="system_ctl_accounts_add" noMatch={null}>
 							<Button type="primary"
 								onClick={() => {
 									this.changeVisible(true, 0);
@@ -291,6 +294,9 @@ class Index extends Component<MonitorProps> {
 									>
 										新建
 							</Button>
+						</Authorized>
+						<Authorized authority="system_ctl_accounts_edit" noMatch={null}>
+
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
@@ -299,6 +305,8 @@ class Index extends Component<MonitorProps> {
 							>
 								修改
 		          			</Button>
+						</Authorized>
+						<Authorized authority="system_ctl_accounts_del" noMatch={null}>
 
 							<Button
 								style={{ marginLeft: '8px' }}
@@ -308,6 +316,8 @@ class Index extends Component<MonitorProps> {
 							>
 								删除
 		          			</Button>
+						</Authorized>
+
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
@@ -345,7 +355,7 @@ class Index extends Component<MonitorProps> {
 						bordered
 						size="small"
 						columns={columns}
-						dataSource={lists.lists}
+						dataSource={ lists.lists }
 						pagination={{ ...this.state.pagination, 
 							showSizeChanger: true, 
 							showQuickJumper: true,

@@ -48,6 +48,15 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
 /**
  * use Authorized check all menu item
  */
+import {HomeOutlined, PicLeftOutlined, SmileOutlined, SettingOutlined, CrownOutlined} from '@ant-design/icons';
+
+const iconEnum = {
+  smile: <SmileOutlined />,
+  home: <HomeOutlined />,
+  picLeft: <PicLeftOutlined />,
+  setting: <SettingOutlined />,
+  crown: <CrownOutlined />,
+};
 
 const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
   menuList.map((item) => {
@@ -56,7 +65,8 @@ const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
       children: item.children ? menuDataRender(item.children) : undefined,
     };
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
-  });
+});
+
 
 const defaultFooterDom = (
   <DefaultFooter
@@ -94,7 +104,18 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
       pathname: '/',
     },
   } = props;
-  console.log(menu);
+
+  const serverMenuItem = ():MenuDataItem[]=>{
+    const transMenuItem :MenuDataItem[] = [];
+    if(Array.isArray(menu.menuDataItems)){
+      menu.menuDataItems.forEach((v) => {
+        const localV = { ...v, children: v.children ? menuDataRender(v.children) : [] , icon:iconEnum[v.icon]};
+        const localMenuDataItem = Authorized.check(v.authority, localV, null) as MenuDataItem;
+        transMenuItem.push(localMenuDataItem);
+      });
+    }
+    return transMenuItem;
+  };
   /**
    * constructor
    */
@@ -154,8 +175,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
         );
       }}
       footerRender={() => defaultFooterDom}
-      menuDataRender={menuDataRender}
+      // menuDataRender={menuDataRender}
       // menuDataRender={() => menu.menuDataItems}
+      menuDataRender={serverMenuItem}
       rightContentRender={() => <RightContent />}
       {...props}
       {...settings}
