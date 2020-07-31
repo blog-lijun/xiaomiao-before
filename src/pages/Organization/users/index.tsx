@@ -150,6 +150,7 @@ class Index extends Component<MonitorProps> {
 		selectedRows: [],
 		pagination: { pageSize:10 },
 		editId: '',
+		search: {},
 	};
 	componentDidMount() {
 		const { dispatch } = this.props;
@@ -180,13 +181,54 @@ class Index extends Component<MonitorProps> {
 		}
 	}
 
-	// 数据新建
-	onCreate = values => {
+	//数据编辑
+	editData = (values,is_look) => {
+		if (values.selectedRowKey == '') {
+			message.error('请选择一个账户');
+			return false;
+		} else {
+			var url = '';
+			if(is_look){
+				url = '/admin/userAdd?editId='+`${values.selectedRowKey}`+'&is_look='+is_look;
+			} else {
+				url = '/admin/userAdd?editId='+`${values.selectedRowKey}`
+			}
+			// this.changeVisible(true, values.selectedRowKey);
+			history.push(url);
+		}
+	};
+	onPageClick = (current,pagesize) => {
 		const { dispatch } = this.props;
-		console.log(this.state,values);return false;
+		// console.log(current,pagesize);
+		var params = this.state.search;
+		params['offset'] = current;
+		params['limit'] = pagesize;
 		dispatch({
-			type: 'account/accountAdd',
-			payload:values,
+			type: 'users/getLists',
+			payload:params
+		});
+	};
+	upStatus = (values, type) => {
+		if (values.selectedRowKey == '') {
+			message.error('请选择一个账户');
+			return false;
+		}
+		// var params = {
+		// 	user_id:values.selectedRowKey
+		// };
+		var params = values.selectedRows[0];
+		params['user_id'] = values.selectedRowKey;
+		var url = 'users/userEdit';
+		if(type == 'status'){//修改状态
+			let statusReturn;
+			statusReturn = values.selectedRows[0].status == "在职" ? 2 : 1;
+			params['status'] = statusReturn;
+			url = 'users/userEdit';
+		}
+		const { dispatch } = this.props;
+		dispatch({
+			type: url,
+			payload: params,
 			callback: (res) => {
 				if(res.status != undefined && res.status != 500){
 					if(res.code == 200){
@@ -197,8 +239,15 @@ class Index extends Component<MonitorProps> {
 								marginTop: '20vh',
 							},
 						});
-						this.changeVisible(false);
-						this.componentDidMount();
+						// this.setState({
+						// 	selectedRowKey: '',
+						// 	selectedRows: [],
+						// 	editId: '',
+						// });
+						dispatch({
+							type: 'users/getLists',
+						});
+						// this.componentDidMount();
 					} else {
 						message.error({content:res.msg,
 							className: 'custom-class',
@@ -208,35 +257,29 @@ class Index extends Component<MonitorProps> {
 						  });
 					}
 				  }
-			},
-		});
-	};
-	//数据编辑
-	editData = values => {
-		console.log(values);
-		if (values.selectedRowKey == '') {
-			message.error('请选择一个账户');
-			return false;
-		} else {
-			this.changeVisible(true, values.selectedRowKey);
-		}
-	};
-	onPageClick = (current,pagesize) => {
-		const { dispatch } = this.props;
-		// console.log(current,pagesize);
-		dispatch({
-			type: 'account/getLists',
-			params:{
-				'offset' : current,
-				'limit' : pagesize,
 			}
 		});
 	};
 
+	resetSearch = () => {
+		this.setState({
+			search: {},
+		});
+	}
+
+	searchLists = values => {
+		this.setState({
+			search:values
+		});
+		const { dispatch } = this.props;
+		dispatch({
+			type: 'users/getLists',
+			payload: values
+		});
+	}
 
 	render() {
 		const { lists,users } = this.props;
-		console.log(lists,users);
 		const rowSelection = {
 			onChange: (selectedRowKeys, selectedRows) => {
 				this.setState({
@@ -249,7 +292,7 @@ class Index extends Component<MonitorProps> {
 		return (
 			<PageContainer>
 				<Card style={{ marginBottom: 10 }}>
-					<FormSearch />
+					<FormSearch searchLists={this.searchLists} resetSearch={this.resetSearch} />
 				</Card>
 				<Card>
 					<Row>
@@ -264,36 +307,28 @@ class Index extends Component<MonitorProps> {
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
-									this.editData(this.state);
+									this.editData(this.state, false);
 								}}
 							>
 								修改
 		          			</Button>
+							<Button
+								style={{ marginLeft: '8px' }}
+								onClick={() => {
+									this.editData(this.state, true);
+								}}
+							>
+								查看
+		          			</Button>
 
-							<Button
-								style={{ marginLeft: '8px' }}
-								onClick={() => {
-									form.resetFields();
-								}}
-							>
-								删除
-		          			</Button>
-							<Button
-								style={{ marginLeft: '8px' }}
-								onClick={() => {
-									form.resetFields();
-								}}
-							>
-								重置密码
-		          			</Button>
 							<Button
 								type="primary"
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
-									form.resetFields();
+									this.upStatus(this.state, 'status');
 								}}
 							>
-								停用/启用
+								在职/离职
 		          			</Button>
 						</Col>
 					</Row>

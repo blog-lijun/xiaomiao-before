@@ -102,12 +102,6 @@ export default defineConfig({
               ],
             },
             {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
-            {
               component: './404',
             },
           ],
@@ -129,7 +123,7 @@ export default defineConfig({
   // @ts-ignore
   title: false,
   ignoreMomentLocale: true,
-  proxy: proxy[REACT_APP_ENV || 'dev'],
+  proxy: proxy[REACT_APP_ENV || 'no-ui'],
   manifest: {
     basePath: '/',
   },

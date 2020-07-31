@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import { Form, Input, Select, Button, Table, Pagination, Row, Card, Col, message } from 'antd';
-import FormCustomizedFormControls from './FormCustomizedFormControls';
+import { PageContainer } from '@ant-design/pro-layout';
+import { Button, Table,  Row, Card, Col, message } from 'antd';
 import FormSearch from './FormSearch';
 import CollectionCreateForm from './modal';
 
@@ -10,7 +9,6 @@ import { Dispatch } from 'redux';
 import { connect } from 'dva';
 import { TagType } from './data';
 import { AccountType } from '@/models/account'
-import { FormInstance } from 'antd/lib/form';
 
 const columns = [
 	{
@@ -59,28 +57,6 @@ const columns = [
 		align: 'center',
 	},
 ];
-const dataSource = [
-	{
-		id: 1,
-		name: 'zhangsan@niuniubang.com',
-		users: '张三（北京公司总裁办）张三（上海公司销售部）',
-		status: 1,
-		created_at: '2020年7月20日13:57:19',
-		created_by: '管理员',
-		updated_at: '2020年7月20日13:57:38',
-		updated_by: '操作员',
-	},
-	{
-		id: 2,
-		name: 'lisi@niuniubang.com',
-		users: '李四（天津公司财税部）',
-		status: 2,
-		created_at: '2020年7月20日13:57:19',
-		created_by: '管理员',
-		updated_at: '2020年7月20日13:57:38',
-		updated_by: '操作员',
-	},
-];
 
 interface MonitorProps extends RouteChildrenProps {
 	// 注意，这里的TagType要使用lists作为继承，在connect里面要用到
@@ -108,6 +84,7 @@ class Index extends Component<MonitorProps> {
 		selectedRows: [],
 		pagination: { pageSize:10 },
 		editId: '',
+		search: {},
 	};
 	componentDidMount() {
 		const { dispatch } = this.props;
@@ -120,7 +97,6 @@ class Index extends Component<MonitorProps> {
 	}
 	// 弹框显示状态、及当前需要展示的数据赋值
 	changeVisible = (status, index) => {
-		console.log(status,index,this.tableRef);
 		this.setState({
 			visible: status,
 		})
@@ -134,6 +110,8 @@ class Index extends Component<MonitorProps> {
 			this.setState({
 				currentDetailData: [],
 				editId: '',
+				selectedRowKey: '',
+				selectedRows: [],
 			})
 		}
 	}
@@ -141,7 +119,7 @@ class Index extends Component<MonitorProps> {
 	// 数据新建
 	onCreate = values => {
 		const { dispatch } = this.props;
-		console.log(this.state,values);
+		// console.log(this.state,values);return false;
 		var type = '';
 		if(this.state.selectedRowKey == ''){
 			type = 'accounts/accountAdd';
@@ -184,7 +162,7 @@ class Index extends Component<MonitorProps> {
 	};
 	//数据编辑
 	editData = values => {
-		console.log(values);
+		// console.log(values);
 		if (values.selectedRowKey == '') {
 			message.error('请选择一个账户');
 			return false;
@@ -192,35 +170,112 @@ class Index extends Component<MonitorProps> {
 			this.changeVisible(true, values.selectedRowKey);
 		}
 	};
+	resetSearch = () => {
+		this.setState({
+			search: {},
+		});
+	}
 	onPageClick = (current,pagesize) => {
 		const { dispatch } = this.props;
-		// console.log(current,pagesize);
+		// console.log();
+		var params = this.state.search;
+		params['offset'] = current;
+		params['limit'] = pagesize;
 		dispatch({
 			type: 'accounts/getLists',
-			params:{
-				'offset' : current,
-				'limit' : pagesize,
-			}
+			payload:params
 		});
 	};
 
+	searchLists = values => {
+		const { dispatch } = this.props;
+		this.setState({
+			search:values
+		});
+		dispatch({
+			type: 'accounts/getLists',
+			payload: values
+		});
+	}
+
+	upStatus = (values, type) => {
+		if (values.selectedRowKey == '') {
+			message.error('请选择一个账户');
+			return false;
+		}
+		var params = {
+			account_id:values.selectedRowKey
+		};
+		var url = 'accounts/accountEdit';
+		if(type == 'status'){//修改状态
+			params['status'] = values.selectedRows[0].status == 1 ? 2 : 1;
+		} else if(type == 'delete'){
+			params['delete'] = 2;
+		} else if(type == 'resetPassword'){
+			url = 'accounts/pwdReset';
+		}
+		const { dispatch } = this.props;
+		dispatch({
+			type: url,
+			payload: params,
+			callback: (res) => {
+				console.log(res);
+				if(res.status != undefined && res.status != 500){
+					if(res.code == 200){
+						message.success({
+							content:res.msg,
+							className: 'custom-class',
+							style: {
+								marginTop: '20vh',
+							},
+						});
+						this.setState({
+							selectedRowKey: [],
+							selectedRows: {},
+						})
+						dispatch({
+							type: 'accounts/getLists',
+						});
+						
+					} else {
+						message.error({content:res.msg,
+							className: 'custom-class',
+							style: {
+							  marginTop: '20vh',
+							},
+						  });
+					}
+				  }
+			}
+		});
+	};
+	onSelectChange = (selectedRowKeys, selectedRows) => {
+			this.setState({
+				selectedRowKey: `${selectedRowKeys}`,
+				selectedRows: selectedRows,
+			})
+			// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);
+		};
 
 	render() {
 		const { lists,users } = this.props;
 		// console.log(users);
+		const { selectedRowKey } = this.state;
 		const rowSelection = {
-			onChange: (selectedRowKeys, selectedRows) => {
-				this.setState({
-					selectedRowKey: `${selectedRowKeys}`,
-					selectedRows: selectedRows,
-				})
-				// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);
-			},
+			selectedRowKey,
+			onChange: this.onSelectChange,
+			// onChange: (selectedRowKeys, selectedRows) => {
+			// 	this.setState({
+			// 		selectedRowKey: `${selectedRowKeys}`,
+			// 		selectedRows: selectedRows,
+			// 	})
+			// 	// console.log(`selectedRowKeys: ${selectedRows}`, 'selectedRows: ', selectedRows);
+			// },
 		};
 		return (
 			<PageContainer>
 				<Card style={{ marginBottom: 10 }}>
-					<FormSearch />
+					<FormSearch searchLists={this.searchLists} resetSearch={this.resetSearch} />
 				</Card>
 				<Card>
 					<Row>
@@ -244,7 +299,7 @@ class Index extends Component<MonitorProps> {
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
-									form.resetFields();
+									this.upStatus(this.state, 'delete');
 								}}
 							>
 								删除
@@ -252,7 +307,7 @@ class Index extends Component<MonitorProps> {
 							<Button
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
-									form.resetFields();
+									this.upStatus(this.state, 'resetPassword');
 								}}
 							>
 								重置密码
@@ -261,7 +316,7 @@ class Index extends Component<MonitorProps> {
 								type="primary"
 								style={{ marginLeft: '8px' }}
 								onClick={() => {
-									form.resetFields();
+									this.upStatus(this.state, 'status');
 								}}
 							>
 								停用/启用
@@ -279,6 +334,7 @@ class Index extends Component<MonitorProps> {
 						users={users}
 					/>
 					<Table
+						// ref={this.tableRef}
 						style={{ paddingTop: 10 }}
 						rowSelection={{ type: "radio", ...rowSelection }}
 						rowKey={record => record.id}
@@ -294,7 +350,7 @@ class Index extends Component<MonitorProps> {
 								this.onPageClick(current,pageSize);
 							}
 						}}
-						ref = {this.tableRef}
+						
 					/>
 				</Card>
 

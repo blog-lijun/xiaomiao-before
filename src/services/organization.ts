@@ -16,25 +16,31 @@ export async function getUsers(){
 
 
 export async function addDept(params:object){
-    request.extendOptions({params:params});
     return request(`http://wylapi.phplijun.cn/api/adddept`, {
         method: 'POST',
+        params: params
+
     });
 }
 
 export async function updateDept(params:object){
-    request.extendOptions({params:params});
     return request(`http://wylapi.phplijun.cn/api/updateDept`, {
         method: 'POST',
+        params: params
+
     });
 }
 
 export async function getDeptInfo(params:object){
     if(params != undefined && 'dept_id' in params){
-        request.extendOptions({params:{'dept_id': params.dept_id}});
+        params = {
+            'dept_id': params.dept_id,
+        }
+        // request.extendOptions({params:{'dept_id': params.dept_id}});
     }
     return request(`http://wylapi.phplijun.cn/api/getDeptInfo`, {
         method: 'GET',
+        params: params
     });
 }
 

@@ -182,6 +182,59 @@ class SearchTree extends React.Component<MonitorProps> {
     } 
     this.setState({ is_disabled: false });
   }
+  deleteDept = () => {
+    let selectedKeys = this.treeRef.current.state.selectedKeys;
+
+    var values = this.formRef.current?.getFieldsValue();
+
+    if (JSON.stringify(selectedKeys) === "[]"){
+      message.error({
+        content: '请先选择一个部门！',
+        className: 'custom-class',
+        style: {
+          marginTop: '20vh',
+        },
+      });
+      return false;
+    } 
+    const { dispatch } = this.props;
+    values.dept_id = `${selectedKeys}`;
+    values.status = 2;
+    dispatch({
+      type: 'getDept/deptEdit',
+      payload: values,
+      callback: (res) => {
+        if(res.code == 200){
+          message.success({
+            content: '成功',
+            className: 'custom-class',
+            style: {
+              marginTop: '20vh',
+            },
+          });
+          dispatch({
+            type: 'getDept/treeList',
+          });
+          if (this.treeRef.current != null) {
+            this.treeRef.current.state.selectedKeys = [];
+          }
+          this.formRef.current?.resetFields();
+          this.setState({ is_disabled: true });
+        } else {
+          if(res.status != undefined && res.status != 500){
+            message.error({content:res.msg,
+              className: 'custom-class',
+              style: {
+                marginTop: '20vh',
+              },
+            });
+          }
+          // console.log(res);
+          
+        }
+      },
+    });
+  }
 
   onFinish = values => {
     const { dispatch } = this.props;
@@ -196,6 +249,7 @@ class SearchTree extends React.Component<MonitorProps> {
       type = 'getDept/deptEdit';
       content = '编辑';
     }
+    values.status = 1;
     dispatch({
       type: type,
       payload: values,
@@ -282,8 +336,8 @@ class SearchTree extends React.Component<MonitorProps> {
         <div style={{ textAlign: 'right', paddingBottom: '20px' }}>
           <Button style={{ margin: '0 5px' }} onClick={this.addDept} type="primary">新建</Button>
           <Button style={{ margin: '0 5px' }} onClick={this.editDept} type="primary">修改</Button>
-          <Button style={{ margin: '0 5px' }} type="primary">删除</Button>
-          <Button style={{ margin: '0 5px' }} type="primary">修改日志</Button>
+          <Button style={{ margin: '0 5px' }} onClick={this.deleteDept} type="primary">删除</Button>
+          {/* <Button style={{ margin: '0 5px' }} type="primary">修改日志</Button> */}
           {/* <Button style={{ margin: '0 5px' }} type="primary">停用/启用</Button> */}
         </div>
 

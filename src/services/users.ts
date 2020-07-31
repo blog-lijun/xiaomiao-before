@@ -2,7 +2,6 @@ import request from '@/utils/request';
 
 export async function getUserLists(params:any){
     // request.extendOptions({params:params});
-    console.log(params);
     return request(`http://wylapi.phplijun.cn/api/getUserLists`, {
         method: 'GET',
         params: params
@@ -19,10 +18,26 @@ export async function getUserInfo(params:any){
 }
 
 
-export async function addAccount(params:any){
+export async function addUser(params:any){
     // request.extendOptions({params:params});
-    return request(`http://wylapi.phplijun.cn/api/addAccounts`, {
+    return request(`http://wylapi.phplijun.cn/api/addUser`, {
         method: 'POST',
-        params: params
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+        params: params,
+        // requestType: 'form',
+    });
+}
+
+export async function editUser(params:any){
+    // request.extendOptions({params:params});
+    return request(`http://wylapi.phplijun.cn/api/updateUser`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+        params: params,
+        // requestType: 'form',
     });
 }

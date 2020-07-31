@@ -79,6 +79,7 @@ const Tree: TreeType = {
       callback(response);
     },
     *deptEdit({ payload, callback }, { call, put }) {
+      console.log(payload);
       const response = yield call(updateDept, payload);
       callback(response);
     },

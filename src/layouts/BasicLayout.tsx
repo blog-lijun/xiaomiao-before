@@ -89,10 +89,12 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
     dispatch,
     children,
     settings,
+    menu,
     location = {
       pathname: '/',
     },
   } = props;
+  console.log(menu);
   /**
    * constructor
    */
@@ -101,6 +103,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
     if (dispatch) {
       dispatch({
         type: 'user/fetchCurrent',
+      });
+      dispatch({
+        type: 'menu/getMenuData',
       });
     }
   }, []);
@@ -150,6 +155,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
       }}
       footerRender={() => defaultFooterDom}
       menuDataRender={menuDataRender}
+      // menuDataRender={() => menu.menuDataItems}
       rightContentRender={() => <RightContent />}
       {...props}
       {...settings}
@@ -161,7 +167,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
   );
 };
 
-export default connect(({ global, settings }: ConnectState) => ({
+export default connect(({ global, settings, menu }: ConnectState) => ({
   collapsed: global.collapsed,
+  menu,
   settings,
 }))(BasicLayout);

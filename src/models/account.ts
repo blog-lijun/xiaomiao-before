@@ -1,5 +1,5 @@
 import { AnyAction, Reducer } from 'redux';
-import { getAccountLists, addAccount, getUserInfo,editAccount, getAllAccounts } from '@/services/account';
+import { getAccountLists, addAccount, getUserInfo,editAccount, getAllAccounts, resetPwd } from '@/services/account';
 
 import { EffectsCommandMap } from 'dva';
 import { TagType } from './data.d';
@@ -25,6 +25,7 @@ export interface TreeType {
     accountAdd: Effect;
     accountEdit: Effect;
     allAccounts: Effect;
+    pwdReset: Effect;
   };
   reducers: {
     returnLists: Reducer<AccountType>;
@@ -90,6 +91,10 @@ const Tree: TreeType = {
         type: "allAccountsReturn",
         payload: response
       });
+    },
+    *pwdReset({ payload, callback }, { call, put }) {
+      const response = yield call(resetPwd, payload);
+      callback(response);
     },
   },
 

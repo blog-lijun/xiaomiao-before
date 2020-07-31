@@ -50,8 +50,11 @@ const errorHandler = (error: { response: Response }): Response => {
  */
 
 const token = () => {
-  let accountInfo = JSON.parse(localStorage.getItem('accountInfo'));
-  console.log(accountInfo.accountInfo.token);
+  let accountInfo = localStorage.getItem('accountInfo');
+  if(accountInfo == undefined || accountInfo == null || accountInfo == ''){
+    return '';
+  }
+  accountInfo = JSON.parse(accountInfo);
   return accountInfo.accountInfo.token;
 };
 const request = extend({

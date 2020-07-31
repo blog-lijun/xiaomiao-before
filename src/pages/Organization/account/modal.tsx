@@ -2,19 +2,6 @@ import React, { Component, useState } from 'react';
 import { Form, Modal, Input, Select, message } from 'antd';
 const { Option } = Select;
 
-const onFinish = values => {
-	console.log('Success:', values);
-};
-
-const onFinishFailed = errorInfo => {
-	console.log('Failed:', errorInfo);
-};
-
-const tailLayout = {
-	wrapperCol: { offset: 8, span: 16 },
-};
-
-
 const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData, editId, users }) => {
 	const [form] = Form.useForm();
 	const layout = {
@@ -28,6 +15,9 @@ const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData,
 		for(let i in arr){
 			account_user_ids.push(arr[i] + '');
 		}
+		form.setFieldsValue({
+			'users[]':account_user_ids
+		})
 	}
 
 	let initValues = currentDetailData == undefined || currentDetailData.length == 0 ? {} :
@@ -44,24 +34,11 @@ const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData,
 	}
 
 	form.setFieldsValue(initValues)
-	// state = { visible: false };
 
-	// handleOk = e => {
-	// 	console.log(e);
-	// 	this.setState({
-	// 	  visible: false,
-	// 	});
-	//   };
-
-	//   handleCancel = e => {
-	// 	console.log(e);
-	// 	this.setState({
-	// 	  visible: false,
-	// 	});
-	//   };
 	if (editId != null && editId != undefined && editId != 0 && editId != '') {
 		return (
 			<Modal
+				getContainer={false} 
 				title="新增"
 				visible={visible}
 				onOk={() => {
@@ -117,7 +94,7 @@ const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData,
 					</Form.Item>
 					<Form.Item
 						label="关联用户"
-						name="users"
+						name="users[]"
 						rules={[
 							{ required: true, message: '请选择关联用户！' },
 						]}
@@ -125,7 +102,7 @@ const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData,
 						<Select
 							mode="multiple"
 							placeholder="请选择"
-							defaultValue={account_user_ids}
+							// defaultValue={account_user_ids}
 						>
 							{children}
 						</Select>
@@ -139,6 +116,7 @@ const CollectionCreateForm = ({ visible, submitMap, onCancel, currentDetailData,
 	} else {
 		return (
 			<Modal
+				getContainer={false}
 				title="新增"
 				visible={visible}
 				onOk={() => {

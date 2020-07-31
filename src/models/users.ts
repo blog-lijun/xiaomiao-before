@@ -1,5 +1,5 @@
 import { AnyAction, Reducer } from 'redux';
-import { getUserLists, addAccount, getUserInfo } from '@/services/users';
+import { getUserLists, addUser, getUserInfo, editUser } from '@/services/users';
 
 import { EffectsCommandMap } from 'dva';
 import { TagType } from './data.d';
@@ -20,10 +20,9 @@ export interface Users {
   state: UsersModelState;
   effects: {
     getLists: Effect;
-    deptInfo: Effect;
     userInfo: Effect;
-    accountAdd: Effect;
-    deptEdit: Effect;
+    userAdd: Effect;
+    userEdit: Effect;
   };
   reducers: {
     returnLists: Reducer<UsersModelState>;
@@ -36,7 +35,7 @@ const User: Users = {
   state: {
     lists: {},
     dept_info: {},
-    users: {},
+    usersInfo: {},
   },
 
   effects: {
@@ -54,30 +53,23 @@ const User: Users = {
         payload: response
       });
     },
-    *deptInfo({ payload, callback }, { call, put }) {
-      // const { resolve } = payload;
-      const response = yield call(getDeptInfo, payload);
-      yield put({
-        // 这行对应下面的reducers处理函数名字
-        type: "get",
-        payload: response
-      });
-      callback(response); // 返回结果
-    },
-    *userInfo({ payload }, { call, put }) {
+    *userInfo({ payload,callback }, { call, put }) {
       const response = yield call(getUserInfo, payload);
-      yield put({
-        // 这行对应下面的reducers处理函数名字
-        type: "users_return",
-        payload: response
-      });
-    },
-    *accountAdd({ payload, callback }, { call, put }) {
-      const response = yield call(addAccount, payload);
+      // yield put({
+      //   // 这行对应下面的reducers处理函数名字
+      //   type: "users_return",
+      //   payload: response
+      // });
       callback(response);
     },
-    *deptEdit({ payload, callback }, { call, put }) {
-      const response = yield call(updateDept, payload);
+    *userAdd({ payload, callback }, { call, put }) {
+      console.log(payload);
+      const response = yield call(addUser, payload);
+      callback(response);
+    },
+    *userEdit({ payload, callback }, { call, put }) {
+      console.log(payload);
+      const response = yield call(editUser, payload);
       callback(response);
     },
   },
@@ -104,7 +96,7 @@ const User: Users = {
     users_return(state, action) {
       return {
         ...state,
-        users: action.payload
+        usersInfo: action.payload
       };
     }
   }

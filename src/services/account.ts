@@ -42,3 +42,12 @@ export async function editAccount(params:any){
         params: params
     });
 }
+
+
+export async function resetPwd(params:any){
+    // request.extendOptions({params:params});
+    return request(`http://wylapi.phplijun.cn/api/resetPwd`, {
+        method: 'POST',
+        params: params
+    });
+}
